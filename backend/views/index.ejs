@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather app, the best in the world</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+     crossorigin=""/>
+     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+     <link rel="stylesheet" href="../css/headers.css">
+     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@docsearch/css@3">
+     <link rel="stylesheet" href="../css/bootstrap.min.css">
+     <link
+     rel="stylesheet"
+     href="https://use.fontawesome.com/releases/v5.14.0/css/all.css"
+    />
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+     crossorigin=""></script>
+    <style>
+        #map {
+            height: 400px;
+            width: 700px;
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }   
+    </style> 
+
+</head>
+
+<body>
+    <header class="p-3 text-bg-dark">
+        <div class="container">
+            <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
+                <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
+                    <li><a href="/" class="nav-link px-2 text-secondary">Home</a></li>
+                    <li><a href="/profile" class="nav-link px-2 text-white">Profile</a></li>
+                    <li><a href="/admin" class="nav-link px-2 text-white">Admin page</a></li>
+                </ul>
+    
+                <form class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3" role="search">
+                    <input type="search" class="form-control form-control-dark text-bg-dark" placeholder="Search..." aria-label="Search">
+                </form>
+    
+                <div class="text-end">
+                    <a href="/login"><button type="button" class="btn btn-outline-light me-2">Login</button></a>
+                    <a href="/register"><button type="button" class="btn btn-warning">Sign-up</button></a>
+                </div>
+            </div>
+        </div>
+    </header>
+    <div class="container">
+        <h3 id="cool" class="mt-5">Weather App</h3>
+        <form action="/weather" method="get" class="form-signin w-100 m-auto mt-5">
+            <input type="text" id="cityInput" name="city" placeholder="Enter city name" />
+            <button type="submit" class="btn btn-primary w-40 py-2">Get Weather</button>
+        </form>
+
+
+        <div id="weather-info" class="mt-5 m-auto">
+            <h3 id="temp">Temperature is: <%= latestWeatherData ? `${latestWeatherData.temperature}°C` : '' %> </h3>
+            <h3 id="weatherDesc">Weather is: <%= latestWeatherData ? latestWeatherData.weatherDescription : '' %> </h3>
+            <h3 id="latitude"><%= latestWeatherData ? latestWeatherData.latitude : '' %></h3>
+            <h3 id="longitude"><%= latestWeatherData ? latestWeatherData.longitude : '' %></h3>
+            <h3 id="feelsLike">feelsLike is: <%= latestWeatherData ? latestWeatherData.feelsLike : '' %></h3>
+            <h3 id="humidity">humidity is: <%= latestWeatherData ? latestWeatherData.humidity : '' %></h3>
+            <h3 id="pressure">Pressure is: <%= latestWeatherData ? latestWeatherData.pressure : '' %></h3>
+            <h3 id="windspeed">windspeed is: <%= latestWeatherData ? latestWeatherData.windSpeed : '' %></h3>
+            <h3 id="countryCode">Country code is: <%= latestOpenCageData ? latestOpenCageData.countryCode : '' %></h3>
+            <img id="weatherImage" src="<%= latestWeatherData ? `http://openweathermap.org/img/wn/${latestWeatherData.icon}@2x.png` : '' %>">
+        </div>
+
+        <div id="country-info">
+            <% if (latestOpenCageData) { %>
+                <h3>City: <%= latestOpenCageData.city %></h3>
+                <h3>Country: <%= latestOpenCageData.country %></h3>
+                <h3>State: <%= latestOpenCageData.state %></h3>
+                <h3>Postcode: <%= latestOpenCageData.postcode %></h3>
+                <h3>Currency: <%= latestOpenCageData.currency %></h3>
+            <% } %>
+        </div>
+
+        <div id="flag-info">
+            <img id="countryFlag" src="<%=flagsImageUrl%>">
+        </div>
+
+        <div id="map"></div>
+
+        <% 
+        if (latestWeatherData) { %>
+            <script>
+                const lat = document.getElementById("latitude").innerText
+                const lon = document.getElementById("longitude").innerText
+                let marker, circle
+                document.addEventListener('DOMContentLoaded', () => {
+                    let map = L.map('map').setView([lat, lon], 9);
+                    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                        maxZoom: 19,
+                        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+                    }).addTo(map);
+                    marker = L.marker([lat, lon]).addTo(map)
+                    circle = L.circle([lat, lon], {radius: 2000}).addTo(map)
+                })
+            </script>
+        <% } %>
+
+    </div>
+    <footer class="mt-5 text-center">
+        <p>Yegisbekov Yerlan | SE-2202</p>
+    </footer>
+    <script>
+        window.history.replaceState({}, document.title, window.location.pathname);
+    </script>
+</body>
+
+</html>
