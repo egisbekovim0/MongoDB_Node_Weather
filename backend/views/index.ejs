@@ -22,11 +22,18 @@
      crossorigin=""></script>
     <style>
         #map {
-            height: 400px;
-            width: 700px;
+            height: 300px;
+            width: 100%;
             margin-top: 20px;
             margin-bottom: 20px;
         }   
+        @media (min-width: 768px) {
+        
+        #map {
+            width: 100%; /* I can adjust it to smaller width */
+        }
+        
+        }
     </style> 
 
 </head>
@@ -39,6 +46,9 @@
                     <li><a href="/" class="nav-link px-2 text-secondary">Home</a></li>
                     <li><a href="/profile" class="nav-link px-2 text-white">Profile</a></li>
                     <li><a href="/admin" class="nav-link px-2 text-white">Admin page</a></li>
+                    <li><a href="/book" class="nav-link px-2 text-white">Library book</a></li>
+                    <li><a href="/cage" class="nav-link px-2 text-white">Country info</a></li>
+                    <li><a href="/history" class="nav-link px-2 text-white">Api history</a></li>
                 </ul>
     
                 <form class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3" role="search">
@@ -52,40 +62,81 @@
             </div>
         </div>
     </header>
-    <div class="container">
-        <h3 id="cool" class="mt-5">Weather App</h3>
-        <form action="/weather" method="get" class="form-signin w-100 m-auto mt-5">
+    <div class="container mt-5">
+        <h2 class="text-center" id="cool">Weather App</h2>
+        <form action="/weather" method="get" class="form-signin w-100 m-auto mt-3"> 
             <input type="text" id="cityInput" name="city" placeholder="Enter city name" />
             <button type="submit" class="btn btn-primary w-40 py-2">Get Weather</button>
         </form>
 
+        <% if (error) { %>
+            <div class="alert alert-danger mt-3" role="alert">
+                <%= error %>
+            </div>
+        <% } else { %>
+        
+            <div id="weather-card" class="card mt-5 m-auto text-center">
+                <div class="card-header">
+                    Weather Information
+                </div>
 
-        <div id="weather-info" class="mt-5 m-auto">
-            <h3 id="temp">Temperature is: <%= latestWeatherData ? `${latestWeatherData.temperature}°C` : '' %> </h3>
-            <h3 id="weatherDesc">Weather is: <%= latestWeatherData ? latestWeatherData.weatherDescription : '' %> </h3>
-            <h3 id="latitude"><%= latestWeatherData ? latestWeatherData.latitude : '' %></h3>
-            <h3 id="longitude"><%= latestWeatherData ? latestWeatherData.longitude : '' %></h3>
-            <h3 id="feelsLike">feelsLike is: <%= latestWeatherData ? latestWeatherData.feelsLike : '' %></h3>
-            <h3 id="humidity">humidity is: <%= latestWeatherData ? latestWeatherData.humidity : '' %></h3>
-            <h3 id="pressure">Pressure is: <%= latestWeatherData ? latestWeatherData.pressure : '' %></h3>
-            <h3 id="windspeed">windspeed is: <%= latestWeatherData ? latestWeatherData.windSpeed : '' %></h3>
-            <h3 id="countryCode">Country code is: <%= latestOpenCageData ? latestOpenCageData.countryCode : '' %></h3>
-            <img id="weatherImage" src="<%= latestWeatherData ? `http://openweathermap.org/img/wn/${latestWeatherData.icon}@2x.png` : '' %>">
-        </div>
+                <div class="card-body">
+                    <div id="weather-info" class="row g-3">
+                        <div class="col-md-4">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-thermometer-half"></i>
+                                <p id="temp">Temperature is: <%= latestWeatherData ? `${latestWeatherData.temperature}°C` : '' %></p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-cloud"></i>
+                                <p id="weatherDesc">Weather is: <%= latestWeatherData ? latestWeatherData.weatherDescription : '' %></p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <p id="latitude"><%= latestWeatherData ? latestWeatherData.latitude : '' %></p>
+                                <p id="longitude"><%= latestWeatherData ? latestWeatherData.longitude : '' %></p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-temperature-low"></i>
+                                <p id="feelsLike">Feels like: <%= latestWeatherData ? latestWeatherData.feelsLike : '' %></p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-tint"></i>
+                                <p id="humidity">Humidity: <%= latestWeatherData ? latestWeatherData.humidity : '' %></p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-tachometer-alt"></i>
+                                <p id="pressure">Pressure: <%= latestWeatherData ? latestWeatherData.pressure : '' %></p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-wind"></i>
+                                <p id="windspeed">Wind speed: <%= latestWeatherData ? latestWeatherData.windSpeed : '' %></p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="d-flex align-items-center">
+                                <img id="weatherImage" src="<%= latestWeatherData ? `http://openweathermap.org/img/wn/${latestWeatherData.icon}@2x.png` : '' %>">
+                            </div>
+                        </div>
+                        
+                    </div>
+                </div>
 
-        <div id="country-info">
-            <% if (latestOpenCageData) { %>
-                <h3>City: <%= latestOpenCageData.city %></h3>
-                <h3>Country: <%= latestOpenCageData.country %></h3>
-                <h3>State: <%= latestOpenCageData.state %></h3>
-                <h3>Postcode: <%= latestOpenCageData.postcode %></h3>
-                <h3>Currency: <%= latestOpenCageData.currency %></h3>
-            <% } %>
-        </div>
+            </div>
+        <% } %>
 
-        <div id="flag-info">
-            <img id="countryFlag" src="<%=flagsImageUrl%>">
-        </div>
 
         <div id="map"></div>
 

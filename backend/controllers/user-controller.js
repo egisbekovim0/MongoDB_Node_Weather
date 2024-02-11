@@ -1,6 +1,7 @@
 import User from "../models/User.js";
 import bcrypt from 'bcryptjs'
 
+
 export const getAllUser = async(req,res,next) => {
     let users
     try {
@@ -17,8 +18,9 @@ export const getAllUser = async(req,res,next) => {
 }
 
 export const isAdminMiddleware = async (req, res, next) => {
+    const one_user = req.session.user 
     try {
-        if (req.user.isAdmin) {
+        if (one_user.isAdmin) {
             return next();
         } else {
             res.redirect('/'); 
@@ -39,6 +41,24 @@ export const getUsers = async (req, res) => {
         res.status(500).send('Internal Server Error');
     }
 }
+
+export const deleteUser = async (req, res) => {
+    const userId = req.params.id;
+
+    try {
+        // Check if the user exists
+        const result = await User.deleteOne({ _id: userId });
+        if (result.deletedCount === 0) {
+            return res.status(404).json({ message: 'User not found' });
+        } 
+
+        res.status(200).json({ message: 'User deleted successfully' });
+
+    } catch (error) {
+        console.error('Error deleting user:', error);
+        res.status(500).send('Internal Server Error');
+    }
+};
 
 export const signup = async (req,res, next) => {
     const {name, email, password} = req.body
@@ -96,3 +116,28 @@ export const login = async(req, res, next) => {
     req.session.user = existingUser 
     return res.status(200).json({message:"login succesful"})
 }
+
+export const editUser = async (req, res) => {
+    const userId = req.params.id;
+
+    let { isAdmin } = req.body;
+    let isAdminka = isAdmin === 'false' ? false : true
+
+    try {
+        
+        const user = await User.findByIdAndUpdate(userId, {
+            isAdmin: !isAdminka
+        }, { new: true });
+        await user.save();
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        res.status(200).json({ message: 'User updated successfully' });
+
+    } catch (error) {
+        console.error('Error updating user:', error);
+        res.status(500).send('Internal Server Error');
+    }
+};

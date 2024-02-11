@@ -10,6 +10,10 @@ const apiHistorySchema = new Schema({
     endpoint: String,
     query: Object,
     response: Object,
+    user: {
+        type: mongoose.Types.ObjectId,
+        ref: "User"
+    },
 })
 
 const ApiHistory = mongoose.model('ApiHistory', apiHistorySchema)

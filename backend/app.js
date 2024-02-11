@@ -9,7 +9,11 @@ const app = express()
 
 import mongoose from 'mongoose';
 import weatherRouter from './router/weatherrouter.js'
+import cageRouter from './router/openCageRouter.js'
+import bookRouter from './router/bookrouter.js'
+import historyRouter from './router/historyRouter.js'
 import router from './router/user-router.js'
+import { render } from 'ejs';
 app.set("view engine", "ejs");
 
 app.use(bodyParser.json())
@@ -32,9 +36,16 @@ app.use(
 )
 
 app.use("/api/user", router)
+app.use("/book", bookRouter)
+app.use("/history", historyRouter)
 
 app.get("/", (req, res) => {
     res.render("index", { latestWeatherData: null, flagsImageUrl: null, latestOpenCageData: null,  error: null});
+})
+
+
+app.get("/history", (req, res) => {
+  res.render("histories", { apiCall: null,  error: null});
 })
 
 
@@ -42,8 +53,6 @@ app.get("/", (req, res) => {
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 app.use('/css', express.static(path.join(__dirname, '..','frontend', 'css')));
-app.use('/assets', express.static(path.join(__dirname, '..', 'frontend', 'assets')));
-app.use(express.static(path.join(__dirname, 'frontend', 'pages')));
 app.set('views', path.join(__dirname, 'views'))
 
 app.get('/profile', (req, res) => {
@@ -71,15 +80,14 @@ app.get('/admin', async (req, res) => {
 });
 
 app.get('/login', (req, res) => {
-  const indexPath = path.join(__dirname,'..', 'frontend', 'pages', 'signin.html');
-  res.sendFile(indexPath);
+  res.render('signin');
 })
 
 app.get('/register', (req, res) => {
-  const indexPath = path.join(__dirname,'..', 'frontend', 'pages', 'signup.html');
-  res.sendFile(indexPath);
+  res.render('signup');
 })
 
+app.use('/cage', cageRouter);
 app.use('/weather', weatherRouter);
 
 mongoose.connect("mongodb+srv://guest:181817@clustercool.itryi0d.mongodb.net/WeatherT?retryWrites=true&w=majority").then(async () => {
