@@ -16,8 +16,10 @@
             <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
               <li><a href="/" class="nav-link px-2 text-secondary">Home</a></li>
               <li><a href="/profile" class="nav-link px-2 text-white">Profile</a></li>
-              <li><a href="/about" class="nav-link px-2 text-white">About</a></li>
-              <li><a href="/admin" class="nav-link px-2 text-white">Admin page</a></li>
+              <% if (user.isAdmin) { %>
+                <li><a href="/admin" class="nav-link px-2 text-white">Admin page</a></li>
+                <% } else { %>
+              <% } %>
               <li><a href="/book" class="nav-link px-2 text-white">Library book</a></li>
               <li><a href="/cage" class="nav-link px-2 text-white">Country info</a></li>
               <li><a href="/history" class="nav-link px-2 text-white">Api history</a></li>
@@ -41,9 +43,22 @@
             <hr>
             <div class="card">
               <div class="card-body">
-                <h4 class="card-title">Username: <span id="username">Name is: <%= user ? user.name : 'N/A' %></span></h4>
-                <h6 class="card-subtitle mb-2 text-muted">Email: <span id="email">Email is: <%= user ? user.email : 'N/A' %></span></h6>
-              </div>
+                <h4 class="card-title">
+                  Username: <span id="username">Name is: <%= user ? user.name : 'N/A' %></span>
+                  <button class="btn btn-primary btn-sm" onclick="updateUsername()">Update Username</button>
+                </h4>
+                <h6 class="card-subtitle mb-2 text-muted">
+                  Email: <span id="email">Email is: <%= user ? user.email : 'N/A' %></span>
+                  
+                </h6>
+                <div>
+                  <label for="newUsername">New Username:</label>
+                  <input type="text" id="newUsername" >
+                  <button class="btn btn-success btn-sm" onclick="editUsername('<%= user._id %>')">Save</button>
+                </div>
+  
+        
+              </div>  
             </div>
           </div>
         </div>
@@ -51,6 +66,42 @@
       <footer class="mt-5 text-center">
         <p>Yegisbekov Yerlan | SE-2202</p>
       </footer>
+      <script>
+        function updateUsername() {
+            
+            document.getElementById('newUsername').style.display = 'block';
+        }
+  
+    
+        async function editUsername(userId) {
+            const newUsername = document.getElementById('newUsername').value;
+            await updateProfile('name', newUsername, userId);
+        }
+    
+    
+        async function updateProfile(field, value, userId) {
+          console.log(value)
+          
+            try {
+                const response = await fetch(`/api/user/updateUsername/${userId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({newUsername: value }),
+                });
+    
+                if (response.ok) {
+                    console.log(`Profile updated successfully.`);
+                    window.location.reload();
+                } else {
+                    console.error(`Failed to update profile.`);
+                }
+            } catch (error) {
+                console.error('Error updating profile:', error);
+            }
+        }
+    </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 </body>
 </html>

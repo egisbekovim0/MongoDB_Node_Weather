@@ -50,6 +50,8 @@ app.get("/history", (req, res) => {
 
 
 
+
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 app.use('/css', express.static(path.join(__dirname, '..','frontend', 'css')));
@@ -80,11 +82,11 @@ app.get('/admin', async (req, res) => {
 });
 
 app.get('/login', (req, res) => {
-  res.render('signin');
+  res.render('signin',{ user: req.session.user});
 })
 
 app.get('/register', (req, res) => {
-  res.render('signup');
+  res.render('signup', {user: req.session.user});
 })
 
 app.use('/cage', cageRouter);
