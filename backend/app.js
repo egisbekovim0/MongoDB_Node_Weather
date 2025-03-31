@@ -5,6 +5,7 @@ import basicAuth from 'express-basic-auth'
 import bodyParser from 'body-parser';
 import { fileURLToPath } from 'url'
 import session from 'express-session'
+import 'dotenv/config';
 const app = express()
 
 import mongoose from 'mongoose';
@@ -92,8 +93,7 @@ app.get('/register', (req, res) => {
 app.use('/cage', cageRouter);
 app.use('/weather', weatherRouter);
 
-mongoose.connect("mongodb+srv://guest:181817@clustercool.itryi0d.mongodb.net/WeatherT?retryWrites=true&w=majority").then(async () => {
-
+mongoose.connect(process.env.MONGO_URI).then(async () => {
   app.listen(5010, () => {
     console.log("Connected to database and listening on port 5010");
   });
